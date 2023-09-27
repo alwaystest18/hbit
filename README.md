@@ -195,9 +195,3 @@ docker run -it --rm -v ./reports:/tools/hbit/reports -v ./domain.txt:/tools/hbit
 ./hbit -df domain.txt   //domain.txt根据实际情况替换
 ```
 
-
-
-## 常见问题
-
-输出网段非目标资产
-
