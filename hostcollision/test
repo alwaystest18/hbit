@@ -1,0 +1,46 @@
+package main
+
+import (
+	"fmt"
+	"os"
+	"os/signal"
+	"time"
+)
+
+func test() {
+	fmt.Println("test1")
+	inputChan := make(chan string)
+	var input string
+	fmt.Scanln(&input)
+	inputChan <- input
+	select {
+	case inputWord := <-inputChan:
+		if inputWord == "q" {
+			fmt.Println("Exiting program...")
+			os.Exit(0)
+		}
+	default:
+		fmt.Println("test")
+	}
+
+}
+
+func main() {
+	// create a channel to receive signals
+	sigChan := make(chan os.Signal, 1)
+	// notify the channel for SIGINT (ctrl+c)
+	signal.Notify(sigChan, os.Interrupt)
+	go func() {
+		<-sigChan
+		fmt.Println("Program killed!")
+		break
+	}()
+
+	// loop from 1 to 10
+	for i := 1; i <= 10; i++ {
+		fmt.Println(i)
+		// sleep for 2 seconds
+		time.Sleep(2 * time.Second)
+	}
+
+}

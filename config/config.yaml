@@ -1,0 +1,48 @@
+global:
+  RecursionDepth: 3        #递归深度，默认为3，即域名为a.com，递归到x.x.x.a.com
+  RemoveTempFile: true     #删除中间产生的临时文件，如果调试程序可关闭此选项
+  MaxBigDictEnumNum: 20   #如果存在子域名数量大于设定值，则先对每个子域名小字典枚举，然后对存在下级子域名的域名做大字典枚举，避免对所有子域名大字典枚举增加耗时
+
+shuffledns:
+  ShufflednsPath: '/tools/bin/shuffledns'           #shuffledns程序路径
+  ResolversFile: '/tools/dnsVerifier/resolvers.txt'    #dns服务器文件
+  TrustResolversFile: '/tools/hbit/trustDns'         #可信dns服务器文件
+  BigWordListFile: '/tools/dict/domain_20000'            #域名枚举大字典
+  SmallWordListFile: '/tools/dict/small_domain_dict'    #域名枚举小字典
+  RateLimit: 10000               #家庭宽带建议调整至200，否则可能因流量过大引起断网
+  RunAsRoot: true
+
+subfinder:
+  SubFinderPath: '/tools/bin/subfinder'        #subfinder程序路径
+
+
+cdnchecker: 
+  CdnCheckerPath: '/tools/cdnChecker/cdnChecker'     #cdnchecker程序路径
+  ResolversFile: '/tools/cdnChecker/resolvers_cn.txt'     #dns服务器文件,最好是国内节点，否则会影响cdn识别准确率
+  CdnCnameListFile: '/tools/cdnChecker/cdn_cname'          #cdncname文件
+
+mapcidr:
+  MapCidrPath: '/tools/bin/mapcidr'                 #mapcidr程序路径
+
+alterx:
+  AlterXPath: '/tools/bin/alterx'                    #alterx程序路径
+  LimitNum: 1000000                                  #alterx生成子域名字典最大行数
+
+
+naabu:
+  NaabuPath: '/tools/hbit/naabu_bin'          #naabu程序路径
+  RateLimit: 1000                              #速率限制，家庭宽带建议调整至200，否则可能因流量过大引起断网
+  MiniScanPorts: '80,443'                   #端口扫描最小范围，用于使用cdn的站点
+  #端口扫描大范围，用于未使用cdn站点，如设置过大如1-65535，虽然会增加资产检出率，但严重影响速度
+  LargeScanPorts: '80,81,85,88,89,443,444,888,1080,1111,1983,2101,2222,3000,3333,4080,4444,5000-5010,5555,5678,6001-6010,6080,6443,6666,7001-7010,7011,7014,7077,7080,7171,7180,7272,7288,7307,7401,7479,7537,7547,7657,7708,7709,7710,7711,7714,7777,7800,7848,7900,8000-8100,8105,8106,8108,8180,8188,8190,8199,8200,8280,8288,8290,8299,8300,8380,8388,8390,8399,8400,8443,8480,8488,8490,8500,8501,8502,8503,8580,8588,8590,8599,8600,8666,8680,8688,8690,8699,8700,8777,8780,8788,8790,8799,8800-8900,8901,8902,8903,8910,8990,8988,8990,8999,9000-9010,9080,9090,9099,9595,9980,9999,10000-10010,10080-10090,10102,10443,11111,12000,12583,14001,14080,15000,15001,15080,16080,17001,17080,18000-18010,18080,18081-18090,18181,18443,18888,19000-19010,19082,19090,20000,20080,20443,22222,24080,25080,26080,27080,28000-28010,28080-28090,28443,28888,29000-29010,29090,30000,30046,30080,30443,33333,34080,35080,36080,37080,38000-38010,38080-38090,38443,38888,39000-39010,39090,40000,40080,40443,44080,44444,45080,46080,47001,47080,48000-48010,48080-48090,48443,48888,49000-49010,49090,50000,50001,50070,50080,50443,54080,55080,55555,56080,57080,58000-58010,58080-58090,58443,58888,59000-59010,59090,60000,60080,60095,60443'
+
+httpx:
+  HttpxPath: '/tools/bin/httpx'              #httpx程序路径
+  Threads: 50        #线程数
+  RateLimit: 150    #每秒钟发送的最大请求数
+
+hostcollision:
+  HostCollisionPath: '/tools/hostCollision/hostCollision'     #hostcollision程序路径
+  Threads: 20            #线程数，建议保持默认，否则网络波动会影响准确率
+  RateLimit: 100          #速率限制，建议保持默认，否则网络波动会影响准确率
+  UseHostCollision: true  #是否进行host碰撞，host碰撞有可能被识别为扫描行为，请根据实际情况选择开启或关闭
