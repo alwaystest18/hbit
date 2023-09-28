@@ -181,7 +181,7 @@ Usage of ./hbit:
 
 ### docker方式启动
 
-subfinder依赖的api key可参考https://github.com/projectdiscovery/subfinder#post-installation-instructions 填写至`provider-config.yaml`文件中，如没有文件留空即可
+**首先需要在hbit目录创建domain.txt文件，将待收集信息的域名写入，每行一个分隔**
 
 ```
 docker run -it --rm -v ./reports:/tools/hbit/reports -v ./domain.txt:/tools/hbit/domain.txt -v ./provider-config.yaml:/root/.config/subfinder/provider-config.yaml -v ./config/config.yaml:/tools/hbit/config/config.yaml hbit /bin/bash -c "cd /tools/hbit && ./hbit -df domain.txt"
@@ -195,3 +195,44 @@ docker run -it --rm -v ./reports:/tools/hbit/reports -v ./domain.txt:/tools/hbit
 ./hbit -df domain.txt   //domain.txt根据实际情况替换
 ```
 
+
+
+### 重要配置
+
+部分配置对结果会产生较大影响，默认配置取一个覆盖率与时间的平衡，针对特定目标，大家可以根据配置自行优化来达到最理想的效果
+
+- provider-config.yaml  此文件为subfinder的api key配置文件，原理就是通过像大家熟知的fofa、zoomeye这类站点获取目标资产，未配置api key的情况下获取数据量非常有限，因此大家一定要尽量多的配置，配置格式可参考https://github.com/projectdiscovery/subfinder#post-installation-instructions 
+
+- 以下介绍配置项均在config/config.yaml中，**仅为对结果影响较大的点，注意非全部配置**
+
+  ```
+  global:
+    RecursionDepth: 3        #递归深度，默认为3，即域名为a.com，递归到x.x.x.a.com，也就是我们常说的四级域名，根据目标实际情况大家可以把此值继续增大，但大量的递归也意味着速度更慢
+    MaxBigDictEnumNum: 20   #如果存在子域名数量大于设定值，则先对每个子域名小字典枚举，然后对存在下级子域名的域名做大字典枚举，避免对所有子域名使用大字典枚举增加耗时。小字典毕竟覆盖有限，大家如果为了更全的结果接受多花费一些时间的话，可以把此项值调大
+  
+  shuffledns:
+    ResolversFile: '/tools/dnsVerifier/resolvers.txt'    #dns服务器文件，更多优质的dns服务器对域名枚举的速度起到非常大的作用，docker中会使用我的另一款自研程序https://github.com/alwaystest18/dnsVerifier筛选，大家有更优质的dns资源可以自行替换
+    TrustResolversFile: '/tools/hbit/trustDns'         #可信dns服务器文件，部分dns服务器会产生一些垃圾数据，因此跑出来的域名要经过可信dns过滤一遍，大家有其他完全可信dns服务器可以添加到此文件，节省过滤的时间
+    BigWordListFile: '/tools/dict/domain_20000'            #域名枚举大字典，好的字典对结果的影响不言而喻，比较小的目标我都用40w行的字典跑
+    SmallWordListFile: '/tools/dict/small_domain_dict'    #域名枚举小字典，道理同上，大家根据实际情况替换字典文件
+    RateLimit: 10000               #家庭宽带建议调整至200，否则可能因流量过大引起断网，网络好的可以继续往大调整
+  
+  
+  cdnchecker: 
+    ResolversFile: '/tools/cdnChecker/resolvers_cn.txt'     #dns服务器文件,最好是国内节点，否则会影响cdn识别准确率，毕竟从国外解析国内cdn的域名，ip段可能是相同的，就会产生误报
+    CdnCnameListFile: '/tools/cdnChecker/cdn_cname'          #cdncname文件，已知cdn的cname大家都可以自行往里加
+  
+  
+  alterx:
+    LimitNum: 1000000                                  #alterx生成子域名字典最大行数，对于一些比较大的目标（子域名1000+），可以适当调大此值，不过行数越多也代表时间越久
+  
+  
+  naabu:
+    RateLimit: 1000                              #速率限制，家庭宽带建议调整至200，否则可能因流量过大引起断网，网络好的可以继续往大调整
+    MiniScanPorts: '80,443'                   #端口扫描最小范围，全部站点使用此范围扫描，对于用了cdn的，往往就是这两个端口，不会有22 3389这种，所以配置太多只会影响速度
+    LargeScanPorts: '80,81...60443'   #端口扫描大范围，仅用于未使用cdn站点，如果设置范围过大，比如1-65535，虽然会增加资产检出率，但严重影响速度
+  
+  
+  ```
+
+  
