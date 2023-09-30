@@ -15,7 +15,9 @@ func FileContentToList(filePath string) []string {
 		fmt.Println("file open fail: " + filePath)
 		return []string{""}
 	}
-	contentList := strings.Split(string(fileContent), "\n")
+
+	fileContentStr := strings.ReplaceAll(string(fileContent), "\r\n", "\n")
+	contentList := strings.Split(fileContentStr, "\n")
 	var newList []string
 	for _, element := range contentList {
 		if element != "" {
