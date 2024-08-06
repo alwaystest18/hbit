@@ -3,12 +3,11 @@ FROM golang:1.21-alpine AS builder
 COPY . /tools/hbit
 
 RUN apk add build-base libpcap-dev git \
-  && go env -w GOPROXY=https://goproxy.cn \
-  && go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest \
-  && go install -v github.com/projectdiscovery/shuffledns/cmd/shuffledns@latest \
-  && go install -v github.com/projectdiscovery/mapcidr/cmd/mapcidr@latest \
-  && go install github.com/projectdiscovery/alterx/cmd/alterx@latest \
-  && go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest \
+  && go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@v2.6.5 \
+  && go install -v github.com/projectdiscovery/shuffledns/cmd/shuffledns@v1.0.9 \
+  && go install -v github.com/projectdiscovery/mapcidr/cmd/mapcidr@v1.1.16 \
+  && go install github.com/projectdiscovery/alterx/cmd/alterx@v0.0.4 \
+  && go install -v github.com/projectdiscovery/httpx/cmd/httpx@v1.4.0 \
   && cd /tools \
   && git clone https://github.com/alwaystest18/cdnChecker.git \
   && cd cdnChecker \
@@ -36,7 +35,9 @@ COPY --from=builder /go/bin/* /tools/bin/
 COPY ./dict /tools/dict
 
 
-RUN yum install -y libpcap-devel git gcc make \
+RUN mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.bak \
+  && curl -o /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo \
+  && yum install -y libpcap-devel git gcc make \
   && git clone --branch=master \
                --depth=1 \
                https://github.com/blechschmidt/massdns.git \
